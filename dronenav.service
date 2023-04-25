@@ -1,0 +1,15 @@
+[Unit]
+Description=dronenav follow-me startup script
+After=network.target
+
+[Service]
+Environment="HOME=/home/dronenav/"
+ExecStartPre=/bin/sleep 30
+ExecStart=/usr/local/bin/python3.9 main.py --uri /dev/ttyTHS1 --video --video_path /home/dronenav/workspace/DroneNav/DroneNav/videos --log_path /home/dronenav/workspace/DroneNav/logs
+WorkingDirectory=/home/dronenav/workspace/DroneNav/DroneNav
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
