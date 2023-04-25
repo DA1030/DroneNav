@@ -112,7 +112,7 @@ def main(args):
 
     videoEnabled = args.video
     if args.video:
-        logging.info('Saving videos to: ' + args.video_path)
+        logging.info('Saving videos: ' + args.video_path)
 
         if not os.path.exists(args.video_path):
             logging.warning('Video path ' + args.video_path + ' does not exist, not recording video.')
@@ -125,23 +125,24 @@ def main(args):
         camera = YoloCamera(camera_callback if videoEnabled else None)
         camera.start()
 
-        logging.info('Searching for killswitch at: ' + args.killswitch_path)
+        logging.info('Searching for killswitch: ' + args.killswitch_path)
         if os.path.exists(args.killswitch_path):
             logging.warning("Killswitch engaged, preventing core run")
             while not EXIT:
                 time.sleep(1)
         else:
             logging.info("Starting core")
-            logging.info("Connecting to vehicle on: %s" % (args.uri,))
-            vehicle = connect(args.uri, wait_ready=['gps_0', 'armed', 'mode', 'attitude'], rate=20)
-
+            logging.info("Connecting to vehicle: %s" % (args.uri,))
+            vehicle = connect(args.uri, wait_ready=['gps_0', 'armed', 'mode', 'attitude'], rate=20, baud = 57600)
+            logging.info("Succesfully connected to vehicle")
+            
             # Setup core thread
             core = Core(vehicle, camera)
             thread = threading.Thread(target=core_thread, args=(core,))
             thread.start()
 
             while not EXIT:
-                logging.debug('core state is: ' + core.state + ', ' + core.activeRule)
+                logging.debug('core state: ' + core.state + ', ' + core.activeRule)
                 time.sleep(1)
 
     # Signal handler will set the value of EXIT
@@ -152,7 +153,9 @@ def main(args):
     if videoWriter:
         videoWriter.release()
 
-    logging.info('Thank you for flying Matchstic Air. We wish you a pleasant onward journey.')
+    vehicle.flush()
+    
+    logging.info('Flight in process...')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

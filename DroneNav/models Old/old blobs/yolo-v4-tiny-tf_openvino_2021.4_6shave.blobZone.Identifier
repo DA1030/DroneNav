@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://github.com/Matchstic/stanley/blob/main/models/yolo-v4-tiny-tf_openvino_2021.4_6shave.blob
+HostUrl=https://raw.githubusercontent.com/Matchstic/stanley/main/models/yolo-v4-tiny-tf_openvino_2021.4_6shave.blob

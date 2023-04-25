@@ -60,14 +60,14 @@ def thread(callback, _pipeline, outputFrames):
                 height = frame.shape[0]
                 width  = frame.shape[1]
 
-            personDetections = []
+            carDetections = []
             for detection in detections:
-                if detection.label == 0:
+                if detection.label == 2:
                     # Ignore detections with depth closer than the minimum the camera supports
                     if (detection.spatialCoordinates.z / 1000.0) <= 0.5:
                         continue
 
-                    personDetections.append(Detection(detection.spatialCoordinates.x / 1000.0, detection.spatialCoordinates.y / 1000.0, detection.spatialCoordinates.z / 1000.0, detection.confidence, fps))
+                    carDetections.append(Detection(detection.spatialCoordinates.x / 1000.0, detection.spatialCoordinates.y / 1000.0, detection.spatialCoordinates.z / 1000.0, detection.confidence, fps))
 
                     if outputFrames:
                         # Denormalize bounding box
@@ -81,14 +81,14 @@ def thread(callback, _pipeline, outputFrames):
             if outputFrames:
                 cv2.putText(frame, "NN (fps): {:.2f}".format(fps), (xStart, yHeight*4), font, fontSize, color)
 
-                if len(personDetections) == 0:
+                if len(carDetections) == 0:
                     cv2.putText(frame, "X (m): 0", (xStart, yHeight), font, fontSize, color)
                     cv2.putText(frame, "Y (m): 0", (xStart, yHeight*2), font, fontSize, color)
                     cv2.putText(frame, "Z (m): 0", (xStart, yHeight*3), font, fontSize, color)
                 else:
                     closest = None
 
-                    for detection in personDetections:
+                    for detection in carDetections:
                         if closest == None: closest = detection
                         elif closest.z > detection.z: closest = detection
 
@@ -96,7 +96,7 @@ def thread(callback, _pipeline, outputFrames):
                     cv2.putText(frame, f"Y (m): {closest.y:.2f}", (xStart, yHeight*2), font, fontSize, color)
                     cv2.putText(frame, f"Z (m): {closest.z:.2f}", (xStart, yHeight*3), font, fontSize, color)
 
-            callback(personDetections, frame if outputFrames else None)
+            callback(carDetections, frame if outputFrames else None)
 
         RUNNING = False
 
